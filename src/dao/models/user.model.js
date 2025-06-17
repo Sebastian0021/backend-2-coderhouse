@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { createHash } from "../utils/bcrypt.js";
+import { createHash } from "../../utils/bcrypt.js";
 
 const userSchema = new mongoose.Schema({
   first_name: { type: String, required: true },

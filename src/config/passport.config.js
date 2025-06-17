@@ -1,11 +1,12 @@
 import passport from "passport";
 import jwt from "passport-jwt";
 import local from "passport-local";
-import userModel from "../models/user.model.js";
 import { isValidPassword } from "../utils/bcrypt.js";
 import env from "../config/dotenv.config.js";
 import { cookieExtractor } from "../utils/cookieExtractor.js";
+import UserRepository from "../repositories/user.repository.js";
 
+const userService = new UserRepository();
 const LocalStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
@@ -16,7 +17,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await userModel.findById(id);
+    const user = await userService.getUserById(id);
     done(null, user);
   } catch (error) {
     done(error);
@@ -33,7 +34,7 @@ export const initializePassport = () => {
       },
       async (jwt_payload, done) => {
         try {
-          const user = await userModel.findById(jwt_payload.id);
+          const user = await userService.getUserById(jwt_payload.id);
           if (!user) {
             return done(null, false, { message: "User not found" });
           }
@@ -51,7 +52,7 @@ export const initializePassport = () => {
       { usernameField: "email" },
       async (email, password, done) => {
         try {
-          const user = await userModel.findOne({ email });
+          const user = await userService.getUserByEmail(email);
           if (!user) {
             return done(null, false, { message: "User not found" });
           }
@@ -76,12 +77,12 @@ export const initializePassport = () => {
       async (req, email, password, done) => {
         try {
           const { first_name, last_name, age } = req.body;
-          const user = await userModel.findOne({ email });
+          const user = await userService.getUserByEmail(email);
           if (user) {
             return done(null, false, { message: "User already exists" });
           }
 
-          const newUser = await userModel.create({
+          const newUser = await userService.createUser({
             first_name,
             last_name,
             email,
