@@ -1,7 +1,11 @@
-// No logro corregir los errores del tipo: ValidatorError: Path `product` is required.
-import CartModel from "../dao/models/cart.model.js";
+// import CartModel from "../dao/models/cart.model.js";
 import CartRepository from "../repositories/cart.repository.js";
+import ProductRepository from "../repositories/product.repository.js";
+import TicketRepository from "../repositories/ticket.repository.js";
+import { v4 as uuidv4 } from "uuid";
 
+const productService = new ProductRepository();
+const ticketService = new TicketRepository();
 const cartService = new CartRepository();
 
 export const createCart = async (req, res) => {
@@ -208,6 +212,72 @@ export const deleteAllProductsFromCart = async (req, res) => {
       .json({ status: "success", message: "All products deleted from cart" });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ status: "error", message: "Internal Server Error" });
+  }
+};
+
+export const purchaseCart = async (req, res) => {
+  try {
+    const { cid } = req.params;
+
+    const cart = await cartService.getCartWithProducts(cid);
+
+    if (!cart) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Cart not found" });
+    }
+
+    const productsToPurchase = [];
+    const productsNotPurchased = [];
+    let totalAmount = 0;
+
+    // Iteramos sobre los productos del carrito para verificar el stock
+    for (const item of cart.products) {
+      const product = item.product;
+      const quantity = item.quantity;
+
+      if (product.stock >= quantity) {
+        // Si hay stock, lo restamos y agregamos el producto a la lista de compra
+        product.stock -= quantity;
+        await productService.updateProduct(product._id, product);
+        productsToPurchase.push(item);
+        totalAmount += product.price * quantity;
+      } else {
+        // Si no hay stock, lo agregamos a la lista de no comprados
+        productsNotPurchased.push(item._id);
+      }
+    }
+
+    // Si se compraron productos, generamos el ticket
+    if (productsToPurchase.length > 0) {
+      const ticket = await ticketService.createTicket({
+        code: uuidv4(),
+        amount: totalAmount,
+        purchaser: req.user.email, // El email del usuario logueado
+      });
+
+      // Actualizamos el carrito para que contenga solo los productos no comprados
+      cart.products = cart.products.filter((item) =>
+        productsNotPurchased.includes(item._id)
+      );
+      await cartService.saveCart(cart);
+
+      return res.status(201).json({
+        status: "success",
+        message: "Purchase completed successfully",
+        ticket,
+        productsNotPurchased,
+      });
+    } else {
+      return res.status(400).json({
+        status: "error",
+        message: "No products could be purchased due to lack of stock",
+        productsNotPurchased,
+      });
+    }
+  } catch (error) {
+    console.error("Error purchasing cart:", error);
     res.status(500).json({ status: "error", message: "Internal Server Error" });
   }
 };

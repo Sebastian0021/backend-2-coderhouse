@@ -9,6 +9,7 @@ import {
   getCarts,
   updateCart,
   updateProductQuantity,
+  purchaseCart,
 } from "../controllers/cart.controller.js";
 import { passportCall } from "../utils/passportCall.js";
 
@@ -37,5 +38,7 @@ router.put("/:cid/products/:pid", passportCall("jwt"), updateProductQuantity);
 
 // DELETE api/carts/:cid deberá eliminar todos los productos del carrito
 router.delete("/:cid", passportCall("jwt"), deleteAllProductsFromCart);
+
+router.post("/:cid/purchase", passportCall("jwt"), purchaseCart);
 
 export default router;

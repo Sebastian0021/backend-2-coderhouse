@@ -23,4 +23,9 @@ export default class CartRepository {
     const savedCart = await this.dao.saveCart(cart);
     return savedCart;
   };
+
+  getCartWithProducts = async (cid) => {
+    const cart = await this.dao.getCartWithProducts(cid);
+    return cart;
+  };
 }

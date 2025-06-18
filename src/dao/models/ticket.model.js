@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-const collection = "Ticket";
-
-const schema = new mongoose.Schema({
+const ticketSchema = new mongoose.Schema({
   code: {
     type: String,
     unique: true,
@@ -10,8 +8,8 @@ const schema = new mongoose.Schema({
   },
   purchase_datetime: {
     type: Date,
-    required: true,
     default: Date.now,
+    required: true,
   },
   amount: {
     type: Number,
@@ -19,9 +17,8 @@ const schema = new mongoose.Schema({
   },
   purchaser: {
     type: String,
-    ref: "User",
     required: true,
   },
 });
 
-export default mongoose.model(collection, schema);
+export default mongoose.model("Ticket", ticketSchema);

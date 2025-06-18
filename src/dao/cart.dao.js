@@ -39,4 +39,14 @@ export default class CartDao {
       return null;
     }
   };
+
+  getCartWithProducts = async (cid) => {
+    try {
+      const cart = await CartModel.findById(cid).populate("products.product");
+      return cart;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
 }
