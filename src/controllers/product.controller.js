@@ -1,4 +1,7 @@
-import productsModel from "../dao/models/product.model.js";
+// import productModel from "../dao/models/product.model.js";
+import ProductRepository from "../repositories/product.repository.js";
+
+const productService = new ProductRepository();
 
 // La ruta raíz GET / deberá listar todos los productos de la base. (Incluyendo la limitación ?limit del desafío anterior
 
@@ -21,7 +24,7 @@ export const getProducts = async (req, res) => {
       ? { $or: [{ category: query }, { availability: query }] }
       : {};
 
-    const result = await productsModel.paginate(filter, options);
+    const result = await productService.paginateProducts(filter, options);
 
     const { docs, totalPages, prevPage, nextPage, hasPrevPage, hasNextPage } =
       result;
@@ -57,7 +60,7 @@ export const getProducts = async (req, res) => {
 export const getProductById = async (req, res) => {
   try {
     const { pid } = req.params;
-    const product = await productsModel.findById(pid);
+    const product = await productService.getProductById(pid);
     if (!product) {
       return res
         .status(404)
@@ -98,7 +101,7 @@ export const createProduct = async (req, res) => {
       category,
       thumbnails,
     };
-    await productsModel.create(newProduct);
+    await productService.createProduct(newProduct);
     res.status(201).json({ status: "success", data: newProduct });
   } catch (error) {
     console.log(error);
@@ -127,7 +130,7 @@ export const updateProduct = async (req, res) => {
       category,
       thumbnails,
     };
-    await productsModel.findByIdAndUpdate(pid, update);
+    await productService.updateProduct(pid, update);
 
     res.status(200).json({ status: "success", message: "Product updated" });
   } catch (error) {
@@ -141,7 +144,7 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const { pid } = req.params;
-    await productsModel.deleteOne({ _id: pid });
+    await productService.deleteProduct({ _id: pid });
     res.status(200).json({ status: "success", message: "Product deleted" });
   } catch (error) {
     console.log(error);
