@@ -31,10 +31,22 @@ export default class User {
     }
   };
 
-  createUser = async () => {
+  createUser = async (user) => {
     try {
-      const user = await userModel.create();
-      return user;
+      const newUser = await userModel.create(user);
+      return newUser;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+
+  updateUser = async (uid, user) => {
+    try {
+      const updatedUser = await userModel.findByIdAndUpdate(uid, user, {
+        new: true,
+      });
+      return updatedUser;
     } catch (error) {
       console.log(error);
       return null;

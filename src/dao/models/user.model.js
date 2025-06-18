@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   age: { type: Number, required: true },
   password: { type: String, required: true }, // This should be a hash
   cart: { type: mongoose.Schema.Types.ObjectId, ref: "Carts" },
-  role: { type: String, default: "user" },
+  role: { type: String },
 });
 
 userSchema.pre("save", function (next) {

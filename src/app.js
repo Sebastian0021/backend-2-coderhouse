@@ -7,6 +7,7 @@ import passport from "passport";
 import { initializePassport } from "./config/passport.config.js";
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import productRouter from "./routes/product.router.js";
 
 const app = express();
 const { PORT, URL_MONGO, SESSION_SECRET } = env;
@@ -30,6 +31,7 @@ app.use(
 
 app.use("/api/sessions", sessionRouter);
 app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
 
 initializePassport();
 app.use(passport.initialize());

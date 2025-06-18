@@ -4,7 +4,7 @@ import local from "passport-local";
 import { isValidPassword } from "../utils/bcrypt.js";
 import env from "../config/dotenv.config.js";
 import { cookieExtractor } from "../utils/cookieExtractor.js";
-import UserRepository from "../repositories/user.repository.js";
+import UserRepository from "../repositories/session.repository.js";
 
 const userService = new UserRepository();
 const LocalStrategy = local.Strategy;

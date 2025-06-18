@@ -1,7 +1,8 @@
 import { generateToken } from "../utils/jwt.js";
 import env from "../config/dotenv.config.js";
+import UserDto from "../dao/dto/user.dto.js";
 export const getCurrentUser = async (req, res) => {
-  res.send({ status: "success", payload: req.user });
+  res.send({ status: "success", payload: new UserDto(req.user) });
 };
 
 export const logout = async (req, res) => {
