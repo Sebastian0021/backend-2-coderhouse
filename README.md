@@ -1,6 +1,6 @@
 # backend-2-coderhouse
 
-Este proyecto es una aplicación backend desarrollada para Coderhouse, actualmente en desarrollo. Incluye autenticación de usuarios con JWT y Passport.js, junto con endpoints de API para gestionar productos, carritos de compra y finalizar el proceso de compra con generación de tickets.
+Este proyecto es una aplicación backend desarrollada para Coderhouse. Incluye autenticación de usuarios con JWT y Passport.js, junto con endpoints de API para gestionar productos, carritos de compra y finalizar el proceso de compra con generación de tickets.
 
 ### Características
 
